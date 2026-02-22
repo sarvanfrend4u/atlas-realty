@@ -1,0 +1,43 @@
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+*.egg-info/
+dist/
+build/
+.ruff_cache/
+.mypy_cache/
+
+# Node
+node_modules/
+.next/
+out/
+.pnpm-store/
+
+# Docker
+*.log
+
+# Data / GIS (large files — use Git LFS)
+*.pmtiles
+*.mbtiles
+*.shp
+*.dbf
+*.shx
+*.prj
+*.pbf
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/settings.json
+.idea/
+*.swp
