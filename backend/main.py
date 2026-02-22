@@ -50,46 +50,69 @@ def health():
 
 @app.get("/api/listings")
 def get_listings(
+    # Viewport bbox
     west: Optional[float] = Query(None),
     south: Optional[float] = Query(None),
     east: Optional[float] = Query(None),
     north: Optional[float] = Query(None),
+    # Budget filter
+    price_min: Optional[int] = Query(None),
+    price_max: Optional[int] = Query(None),
+    # Location filter — comma-separated neighborhood names e.g. "Adyar,Velachery"
+    neighborhoods: Optional[str] = Query(None),
+    # Property type filter — comma-separated e.g. "apartment,villa"
+    property_types: Optional[str] = Query(None),
 ):
     """
-    Return property listings.
-    If west/south/east/north bbox params are provided, filter to that viewport.
-    Otherwise return all listings (capped at 500).
-    MVP: simple lat/lng filtering. Phase 2 upgrades to PostGIS ST_Within.
+    Return property listings with optional filters.
+    All filter params are combinable — filters are ANDed together.
     """
     conn = get_connection()
     try:
         cur = conn.cursor()
-        bbox_provided = all(v is not None for v in [west, south, east, north])
 
-        if bbox_provided:
-            cur.execute(
-                """
-                SELECT id::text, title, price, beds, baths, area_sqft,
-                       address, neighborhood, city, lat, lng, property_type
-                FROM listings
-                WHERE lat BETWEEN %s AND %s
-                  AND lng BETWEEN %s AND %s
-                ORDER BY price
-                LIMIT 500
-                """,
-                (south, north, west, east),
-            )
-        else:
-            cur.execute(
-                """
-                SELECT id::text, title, price, beds, baths, area_sqft,
-                       address, neighborhood, city, lat, lng, property_type
-                FROM listings
-                ORDER BY price
-                LIMIT 500
-                """
-            )
+        # Build query dynamically based on provided filters
+        query = """
+            SELECT id::text, title, price, beds, baths, area_sqft,
+                   address, neighborhood, city, lat, lng, property_type
+            FROM listings
+            WHERE 1=1
+        """
+        params: list = []
 
+        # Viewport bbox
+        if all(v is not None for v in [west, south, east, north]):
+            query += " AND lat BETWEEN %s AND %s AND lng BETWEEN %s AND %s"
+            params.extend([south, north, west, east])
+
+        # Budget
+        if price_min is not None:
+            query += " AND price >= %s"
+            params.append(price_min)
+
+        if price_max is not None:
+            query += " AND price <= %s"
+            params.append(price_max)
+
+        # Neighborhoods (multi-select, comma-separated)
+        if neighborhoods:
+            neighborhood_list = [n.strip() for n in neighborhoods.split(",") if n.strip()]
+            if neighborhood_list:
+                placeholders = ",".join(["%s"] * len(neighborhood_list))
+                query += f" AND neighborhood IN ({placeholders})"
+                params.extend(neighborhood_list)
+
+        # Property types (multi-select, comma-separated)
+        if property_types:
+            type_list = [t.strip() for t in property_types.split(",") if t.strip()]
+            if type_list:
+                placeholders = ",".join(["%s"] * len(type_list))
+                query += f" AND property_type IN ({placeholders})"
+                params.extend(type_list)
+
+        query += " ORDER BY price LIMIT 500"
+
+        cur.execute(query, params)
         rows = cur.fetchall()
         listings = [dict(row) for row in rows]
         return {"listings": listings, "total": len(listings)}

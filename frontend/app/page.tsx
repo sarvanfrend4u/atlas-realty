@@ -4,9 +4,9 @@ import dynamic from "next/dynamic";
 import { MapPin } from "lucide-react";
 import SearchBar from "@/components/Search/SearchBar";
 import ListingSheet from "@/components/Listing/ListingSheet";
+import FilterSheet from "@/components/Filters/FilterSheet";
 import { useMapStore } from "@/store/mapStore";
 
-// MapLibre GL JS uses browser APIs — must be dynamically imported with ssr: false
 const MapCanvas = dynamic(() => import("@/components/Map/MapCanvas"), {
   ssr: false,
   loading: () => (
@@ -32,7 +32,6 @@ export default function HomePage() {
       {/* ── Navigation bar ──────────────────────────────────────────── */}
       <nav className="absolute top-0 left-0 right-0 z-20 glass border-b border-white/30">
         <div className="h-14 px-4 flex items-center justify-between max-w-screen-xl mx-auto">
-          {/* Logo */}
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-xl bg-[#007AFF] flex items-center justify-center shadow-sm">
               <MapPin className="w-4 h-4 text-white" strokeWidth={2.5} />
@@ -41,8 +40,6 @@ export default function HomePage() {
               Atlas Realty
             </span>
           </div>
-
-          {/* Nav actions */}
           <div className="flex items-center gap-3">
             <button className="text-[#007AFF] text-[15px] font-medium hidden sm:block">
               Sign In
@@ -54,7 +51,7 @@ export default function HomePage() {
         </div>
       </nav>
 
-      {/* ── Search bar ──────────────────────────────────────────────── */}
+      {/* ── Search + Filter bar ──────────────────────────────────────── */}
       <div className="absolute top-14 left-0 right-0 z-20 px-4 pt-3 max-w-screen-sm mx-auto w-full">
         <SearchBar />
       </div>
@@ -69,6 +66,9 @@ export default function HomePage() {
           </div>
         </div>
       )}
+
+      {/* ── Filter sheet (slides up from bottom) ────────────────────── */}
+      <FilterSheet />
 
       {/* ── Listing detail sheet ────────────────────────────────────── */}
       <ListingSheet />

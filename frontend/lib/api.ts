@@ -10,23 +10,46 @@ export interface BBox {
   north: number;
 }
 
+export interface ListingFilters {
+  bbox?: BBox;
+  priceMin?: number | null;
+  priceMax?: number | null;
+  neighborhoods?: string[];
+  propertyTypes?: string[];
+}
+
 /**
  * Fetch property listings from the backend.
- * If a bounding box is provided, returns only listings within that viewport.
- * Phase 2 will use this bbox for PostGIS ST_Within queries.
+ * All filters are optional and combinable — the backend ANDs them together.
  */
-export async function fetchListings(bbox?: BBox): Promise<Listing[]> {
-  let url = `${API_URL}/api/listings`;
+export async function fetchListings(filters?: ListingFilters): Promise<Listing[]> {
+  const params = new URLSearchParams();
 
-  if (bbox) {
-    const params = new URLSearchParams({
-      west: bbox.west.toString(),
-      south: bbox.south.toString(),
-      east: bbox.east.toString(),
-      north: bbox.north.toString(),
-    });
-    url += `?${params.toString()}`;
+  if (filters?.bbox) {
+    params.set("west", filters.bbox.west.toString());
+    params.set("south", filters.bbox.south.toString());
+    params.set("east", filters.bbox.east.toString());
+    params.set("north", filters.bbox.north.toString());
   }
+
+  if (filters?.priceMin != null) {
+    params.set("price_min", filters.priceMin.toString());
+  }
+
+  if (filters?.priceMax != null) {
+    params.set("price_max", filters.priceMax.toString());
+  }
+
+  if (filters?.neighborhoods?.length) {
+    params.set("neighborhoods", filters.neighborhoods.join(","));
+  }
+
+  if (filters?.propertyTypes?.length) {
+    params.set("property_types", filters.propertyTypes.join(","));
+  }
+
+  const query = params.toString();
+  const url = query ? `${API_URL}/api/listings?${query}` : `${API_URL}/api/listings`;
 
   const res = await fetch(url);
   if (!res.ok) {
