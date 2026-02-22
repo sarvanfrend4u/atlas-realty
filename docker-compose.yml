@@ -28,6 +28,8 @@ services:
       - "8000:8000"
     environment:
       DATABASE_URL: postgresql://postgres:password@db:5432/atlas_realty
+    volumes:
+      - ./backend:/app        # hot reload — uvicorn --reload watches this
     depends_on:
       db:
         condition: service_healthy
@@ -43,6 +45,10 @@ services:
     environment:
       NEXT_PUBLIC_API_URL: http://localhost:8000
       NEXT_PUBLIC_MAP_STYLE_URL: https://tiles.openfreemap.org/styles/liberty
+    volumes:
+      - ./frontend:/app         # hot reload — Next.js dev server watches this
+      - /app/node_modules       # keep node_modules from image (not overwritten by host mount)
+      - /app/.next              # keep .next build cache from image
     depends_on:
       - backend
 
