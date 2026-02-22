@@ -1,0 +1,88 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── Base ─────────────────────────────────────────────────────────────────── */
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+}
+
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ─── Glass effect ──────────────────────────────────────────────────────────── */
+.glass {
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+}
+
+.glass-dark {
+  background: rgba(28, 28, 30, 0.82);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+}
+
+/* ─── Price pin markers on map ──────────────────────────────────────────────── */
+.price-pin {
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 7px 13px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #1c1c1e;
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.14),
+    0 0 0 0.5px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    background 0.15s ease,
+    color 0.15s ease;
+  white-space: nowrap;
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "SF Pro Text",
+    sans-serif;
+  letter-spacing: -0.2px;
+  user-select: none;
+}
+
+.price-pin:hover {
+  transform: scale(1.1);
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.18),
+    0 0 0 0.5px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+}
+
+.price-pin.active {
+  background: #1c1c1e;
+  color: #ffffff;
+  transform: scale(1.12);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.28);
+  z-index: 20;
+}
+
+/* ─── MapLibre overrides ────────────────────────────────────────────────────── */
+.maplibregl-ctrl-attrib {
+  font-size: 10px !important;
+  opacity: 0.6;
+}
+
+.maplibregl-ctrl-group {
+  border-radius: 12px !important;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+}
+
+.maplibregl-ctrl-group button {
+  width: 36px !important;
+  height: 36px !important;
+}
