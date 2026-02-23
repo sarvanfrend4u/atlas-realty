@@ -41,7 +41,7 @@ export default function MapCanvas() {
   const markersRef = useRef<MarkerEntry[]>([]);
   const [mapLoaded, setMapLoaded] = useState(false);
 
-  const { setSelectedListing, setListingCount, activeFilters, activeLayers } = useMapStore();
+  const { setSelectedListing, setListingCount, activeFilters, activeLayers, searchQuery } = useMapStore();
   const floodLoadedRef = useRef(false);
 
   // ── Initialise map (runs once) ───────────────────────────────────────────
@@ -96,19 +96,36 @@ export default function MapCanvas() {
       setSelectedListing(null);
 
       try {
-        const listings = await fetchListings({
+        const allListings = await fetchListings({
           priceMin: activeFilters.priceMin,
           priceMax: activeFilters.priceMax,
           neighborhoods: activeFilters.neighborhoods,
           propertyTypes: activeFilters.propertyTypes,
         });
 
+        // Client-side search filter (neighbourhood, title, city)
+        const q = searchQuery.toLowerCase().trim();
+        const listings = q
+          ? allListings.filter(
+              (l) =>
+                l.neighborhood?.toLowerCase().includes(q) ||
+                l.title?.toLowerCase().includes(q) ||
+                l.city?.toLowerCase().includes(q)
+            )
+          : allListings;
+
         setListingCount(listings.length);
 
         listings.forEach((listing) => {
           const el = document.createElement("div");
-          el.className = "price-pin";
-          el.textContent = formatPrice(listing.price);
+
+          if (listing.beds != null) {
+            el.className = "price-pin price-pin--enhanced";
+            el.innerHTML = `<span class="pin-beds">${listing.beds}\u{1F6CF}</span><span class="pin-price">${formatPrice(listing.price)}</span>`;
+          } else {
+            el.className = "price-pin";
+            el.textContent = formatPrice(listing.price);
+          }
 
           el.addEventListener("click", (e) => {
             e.stopPropagation();
@@ -130,7 +147,7 @@ export default function MapCanvas() {
 
     loadMarkers();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mapLoaded, activeFilters]);
+  }, [mapLoaded, activeFilters, searchQuery]);
 
   // ── Flood layer visibility ───────────────────────────────────────────────
   useEffect(() => {

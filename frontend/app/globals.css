@@ -14,7 +14,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* ─── Glass effect ──────────────────────────────────────────────────────────── */
+/* ─── Glass effects ─────────────────────────────────────────────────────────── */
 .glass {
   background: rgba(255, 255, 255, 0.82);
   backdrop-filter: saturate(180%) blur(20px);
@@ -52,6 +52,10 @@ body {
     sans-serif;
   letter-spacing: -0.2px;
   user-select: none;
+  /* GPU compositing for smooth transforms */
+  position: relative;
+  will-change: transform;
+  backface-visibility: hidden;
 }
 
 .price-pin:hover {
@@ -68,6 +72,112 @@ body {
   transform: scale(1.12);
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.28);
   z-index: 20;
+  animation: pinSelect 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ─── Enhanced price pin (beds + price) ─────────────────────────────────────── */
+.price-pin--enhanced {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px 6px 10px;
+}
+
+.price-pin--enhanced .pin-beds {
+  font-size: 11px;
+  color: #8e8e93;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.price-pin--enhanced .pin-price {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.price-pin--enhanced.active .pin-beds {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.price-pin--enhanced.active .pin-price {
+  color: #ffffff;
+}
+
+/* ─── Flood risk indicator on pins ─────────────────────────────────────────── */
+.price-pin--flood-high {
+  border-bottom: 2.5px solid #ff3b30;
+  border-radius: 24px 24px 20px 20px;
+}
+
+.price-pin--flood-medium {
+  border-bottom: 2.5px solid #ff9500;
+  border-radius: 24px 24px 20px 20px;
+}
+
+/* ─── Cluster pin (future use) ──────────────────────────────────────────────── */
+.price-pin--cluster {
+  background: #007aff;
+  color: #ffffff;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  box-shadow:
+    0 0 0 4px rgba(0, 122, 255, 0.2),
+    0 2px 8px rgba(0, 0, 0, 0.18);
+}
+
+/* ─── Animation keyframes ────────────────────────────────────────────────────── */
+@keyframes pinSelect {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.2); }
+  100% { transform: scale(1.12); }
+}
+
+@keyframes dragPulse {
+  0%, 100% { opacity: 0.4; transform: scaleX(1); }
+  50%       { opacity: 0.7; transform: scaleX(1.4); }
+}
+
+/* ─── Sheet & panel utilities ───────────────────────────────────────────────── */
+.sheet-shadow {
+  box-shadow:
+    0 -4px 32px rgba(0, 0, 0, 0.12),
+    0 -1px 0 rgba(0, 0, 0, 0.04);
+}
+
+.sidebar-panel {
+  background: #f2f2f7;
+  border-left: 0.5px solid rgba(0, 0, 0, 0.12);
+}
+
+/* ─── Scrollbar utilities ───────────────────────────────────────────────────── */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.panel-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+
+.panel-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.panel-scroll::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 2px;
 }
 
 /* ─── MapLibre overrides ────────────────────────────────────────────────────── */
@@ -77,7 +187,7 @@ body {
 }
 
 .maplibregl-ctrl-group {
-  border-radius: 12px !important;
+  border-radius: 14px !important;
   overflow: hidden;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
 }
