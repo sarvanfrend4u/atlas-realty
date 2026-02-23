@@ -50,6 +50,10 @@ interface MapStore {
   /** Filter sheet open/close */
   isFilterSheetOpen: boolean;
   setFilterSheetOpen: (open: boolean) => void;
+
+  /** Active map overlay layers (e.g. "flood") */
+  activeLayers: string[];
+  toggleLayer: (id: string) => void;
 }
 
 export const useMapStore = create<MapStore>((set) => ({
@@ -68,4 +72,12 @@ export const useMapStore = create<MapStore>((set) => ({
 
   isFilterSheetOpen: false,
   setFilterSheetOpen: (open) => set({ isFilterSheetOpen: open }),
+
+  activeLayers: [],
+  toggleLayer: (id) =>
+    set((state) => ({
+      activeLayers: state.activeLayers.includes(id)
+        ? state.activeLayers.filter((l) => l !== id)
+        : [...state.activeLayers, id],
+    })),
 }));

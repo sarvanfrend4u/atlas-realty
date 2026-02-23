@@ -1,10 +1,14 @@
 import os
 import time
+import json
 import psycopg2
 import psycopg2.extras
 from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from typing import Optional
+
+LAYERS_DIR = os.path.join(os.path.dirname(__file__), "layers")
 
 app = FastAPI(title="Atlas Realty API", version="0.1.0")
 
@@ -118,3 +122,12 @@ def get_listings(
         return {"listings": listings, "total": len(listings)}
     finally:
         conn.close()
+
+
+@app.get("/api/layers/flood")
+def get_flood_layer():
+    """Return the Chennai flood zones GeoJSON layer."""
+    path = os.path.join(LAYERS_DIR, "flood_zones_chennai.geojson")
+    with open(path, "r") as f:
+        data = json.load(f)
+    return JSONResponse(content=data)

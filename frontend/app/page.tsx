@@ -5,6 +5,7 @@ import { MapPin } from "lucide-react";
 import SearchBar from "@/components/Search/SearchBar";
 import ListingSheet from "@/components/Listing/ListingSheet";
 import FilterSheet from "@/components/Filters/FilterSheet";
+import LayerControls from "@/components/Map/LayerControls";
 import { useMapStore } from "@/store/mapStore";
 
 const MapCanvas = dynamic(() => import("@/components/Map/MapCanvas"), {
@@ -56,16 +57,20 @@ export default function HomePage() {
         <SearchBar />
       </div>
 
-      {/* ── Listing count badge ─────────────────────────────────────── */}
-      {listingCount > 0 && (
-        <div className="absolute bottom-8 left-4 z-20 animate-fade-in">
-          <div className="glass rounded-full px-4 py-2 shadow-sm border border-white/50">
-            <span className="text-[13px] font-semibold text-[#1C1C1E]">
-              {listingCount} homes
-            </span>
+      {/* ── Layer controls (bottom-left) ─────────────────────────────── */}
+      <div className="absolute bottom-8 left-4 z-20 flex flex-col items-start gap-2">
+        <LayerControls />
+        {/* Listing count badge */}
+        {listingCount > 0 && (
+          <div className="animate-fade-in">
+            <div className="glass rounded-full px-4 py-2 shadow-sm border border-white/50">
+              <span className="text-[13px] font-semibold text-[#1C1C1E]">
+                {listingCount} homes
+              </span>
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* ── Filter sheet (slides up from bottom) ────────────────────── */}
       <FilterSheet />

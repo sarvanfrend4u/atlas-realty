@@ -6,6 +6,22 @@ import { useMapStore } from "@/store/mapStore";
 import { fetchListings } from "@/lib/api";
 import { formatPrice, Listing } from "@/types/listing";
 
+const FLOOD_SOURCE_ID = "flood-zones";
+const FLOOD_FILL_ID = "flood-fill";
+const FLOOD_LINE_ID = "flood-line";
+
+const RISK_FILL_COLOR: Record<string, string> = {
+  high: "#FF3B30",
+  medium: "#FF9500",
+  low: "#34C759",
+};
+
+const RISK_OPACITY: Record<string, number> = {
+  high: 0.25,
+  medium: 0.18,
+  low: 0.12,
+};
+
 interface MarkerEntry {
   marker: maplibregl.Marker;
   el: HTMLDivElement;
@@ -25,7 +41,8 @@ export default function MapCanvas() {
   const markersRef = useRef<MarkerEntry[]>([]);
   const [mapLoaded, setMapLoaded] = useState(false);
 
-  const { setSelectedListing, setListingCount, activeFilters } = useMapStore();
+  const { setSelectedListing, setListingCount, activeFilters, activeLayers } = useMapStore();
+  const floodLoadedRef = useRef(false);
 
   // ── Initialise map (runs once) ───────────────────────────────────────────
   useEffect(() => {
@@ -114,6 +131,81 @@ export default function MapCanvas() {
     loadMarkers();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mapLoaded, activeFilters]);
+
+  // ── Flood layer visibility ───────────────────────────────────────────────
+  useEffect(() => {
+    if (!mapLoaded || !mapRef.current) return;
+    const map = mapRef.current;
+    const isActive = activeLayers.includes("flood");
+
+    async function ensureFloodLayer() {
+      if (!floodLoadedRef.current) {
+        // Lazy-fetch the GeoJSON from backend
+        const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+        const res = await fetch(`${API}/api/layers/flood`);
+        const geojson = await res.json();
+
+        map.addSource(FLOOD_SOURCE_ID, { type: "geojson", data: geojson });
+
+        // Semi-transparent fill coloured by risk level
+        map.addLayer({
+          id: FLOOD_FILL_ID,
+          type: "fill",
+          source: FLOOD_SOURCE_ID,
+          layout: { visibility: "visible" },
+          paint: {
+            "fill-color": [
+              "match",
+              ["get", "risk_level"],
+              "high", RISK_FILL_COLOR.high,
+              "medium", RISK_FILL_COLOR.medium,
+              RISK_FILL_COLOR.low,
+            ],
+            "fill-opacity": [
+              "match",
+              ["get", "risk_level"],
+              "high", RISK_OPACITY.high,
+              "medium", RISK_OPACITY.medium,
+              RISK_OPACITY.low,
+            ],
+          },
+        });
+
+        // Outline stroke
+        map.addLayer({
+          id: FLOOD_LINE_ID,
+          type: "line",
+          source: FLOOD_SOURCE_ID,
+          layout: { visibility: "visible" },
+          paint: {
+            "line-color": [
+              "match",
+              ["get", "risk_level"],
+              "high", RISK_FILL_COLOR.high,
+              "medium", RISK_FILL_COLOR.medium,
+              RISK_FILL_COLOR.low,
+            ],
+            "line-width": 1.5,
+            "line-opacity": 0.7,
+          },
+        });
+
+        floodLoadedRef.current = true;
+      } else {
+        const visibility = isActive ? "visible" : "none";
+        map.setLayoutProperty(FLOOD_FILL_ID, "visibility", visibility);
+        map.setLayoutProperty(FLOOD_LINE_ID, "visibility", visibility);
+      }
+    }
+
+    if (isActive) {
+      ensureFloodLayer().catch(console.error);
+    } else if (floodLoadedRef.current) {
+      map.setLayoutProperty(FLOOD_FILL_ID, "visibility", "none");
+      map.setLayoutProperty(FLOOD_LINE_ID, "visibility", "none");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mapLoaded, activeLayers]);
 
   return (
     <div className="absolute inset-0">

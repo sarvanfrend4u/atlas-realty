@@ -1,0 +1,138 @@
+{
+  "type": "FeatureCollection",
+  "metadata": {
+    "description": "Indicative flood-prone zones for Chennai, India",
+    "source": "Derived from NDMA flood risk assessments, CMDA Chennai Master Plan, and analysis of 2015 Chennai floods. For informational purposes only.",
+    "crs": "EPSG:4326"
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "zone_name": "Adyar River Floodplain",
+        "risk_level": "high",
+        "description": "Primary flood corridor along the Adyar river. Severely affected during 2015 Chennai floods. Covers Saidapet, Kotturpuram, Adyar neighbourhoods.",
+        "river": "Adyar"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [80.180, 13.012],
+          [80.200, 13.015],
+          [80.220, 13.012],
+          [80.240, 13.008],
+          [80.258, 13.003],
+          [80.268, 12.998],
+          [80.270, 12.990],
+          [80.265, 12.983],
+          [80.255, 12.987],
+          [80.242, 12.992],
+          [80.225, 12.996],
+          [80.205, 12.995],
+          [80.188, 12.993],
+          [80.175, 12.997],
+          [80.175, 13.005],
+          [80.180, 13.012]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "zone_name": "Cooum River Corridor",
+        "risk_level": "high",
+        "description": "Flood-prone corridor along the Cooum river running through central Chennai. Affected areas include Kilpauk, Nungambakkam, Egmore and Chetpet.",
+        "river": "Cooum"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [80.200, 13.080],
+          [80.225, 13.083],
+          [80.248, 13.078],
+          [80.265, 13.073],
+          [80.278, 13.065],
+          [80.280, 13.058],
+          [80.273, 13.052],
+          [80.263, 13.057],
+          [80.247, 13.063],
+          [80.228, 13.068],
+          [80.205, 13.068],
+          [80.193, 13.070],
+          [80.195, 13.078],
+          [80.200, 13.080]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "zone_name": "Pallikaranai Marshland & Velachery",
+        "risk_level": "high",
+        "description": "Natural wetland acting as Chennai's flood buffer. Partially encroached. Velachery and Pallikaranai areas flooded extensively in 2015 due to drainage into this marsh.",
+        "area_type": "wetland"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [80.192, 12.968],
+          [80.218, 12.972],
+          [80.232, 12.963],
+          [80.238, 12.948],
+          [80.235, 12.930],
+          [80.222, 12.920],
+          [80.205, 12.917],
+          [80.190, 12.922],
+          [80.183, 12.935],
+          [80.185, 12.952],
+          [80.190, 12.962],
+          [80.192, 12.968]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "zone_name": "Ambattur Lake Overflow Zone",
+        "risk_level": "medium",
+        "description": "Low-lying areas around Ambattur Lake susceptible to overflow flooding during heavy rainfall events.",
+        "area_type": "lake_overflow"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [80.142, 13.120],
+          [80.165, 13.125],
+          [80.180, 13.115],
+          [80.182, 13.095],
+          [80.165, 13.088],
+          [80.145, 13.090],
+          [80.138, 13.105],
+          [80.142, 13.120]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "zone_name": "Tondiarpet Coastal Low-lying Zone",
+        "risk_level": "medium",
+        "description": "Low-elevation coastal zone in north Chennai. Susceptible to both riverine flooding from Buckingham Canal and tidal surge during cyclones.",
+        "area_type": "coastal"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [80.272, 13.098],
+          [80.292, 13.105],
+          [80.308, 13.098],
+          [80.305, 13.082],
+          [80.288, 13.078],
+          [80.272, 13.082],
+          [80.268, 13.092],
+          [80.272, 13.098]
+        ]]
+      }
+    }
+  ]
+}
